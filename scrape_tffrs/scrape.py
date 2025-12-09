@@ -3,9 +3,6 @@ import re
 import repository as repo
 import error_log
 
-def convert_result_to_decimal(result : str):
-    # TODO
-    pass
 
 def reduce_all_whitespace(string : str):
     return " ".join(string.split())
@@ -57,9 +54,6 @@ def scrape_individual_performance(eventId : int, season_type : str, season_year 
     result = result_info.find("a").text.strip()
     print("Result: " + result)
 
-    result_decimal = convert_result_to_decimal(result)
-    print("Result Decimal: " + str(result_decimal))
-
     # Get Meet Info
     meet_link_info = performance.find("div", {"data-label" : "Meet"}).find("a").get("href").strip()
     meet_name = performance.find("div", {"data-label" : "Meet"}).find("a").text.strip()
@@ -92,9 +86,6 @@ def scrape_relay_performance(eventId : int, season_type : str, season_year : int
     # Get Time
     result_info = performance.find("div", {"data-label" : "Time"}).find("a").text.strip()
     print("Result: " + result_info)
-
-    result_decimal = convert_result_to_decimal(result_info)
-    print("Result Decimal: " + str(result_decimal))
 
     # Get Athletes Info
 
@@ -139,6 +130,10 @@ def scrape_event(eventId : int, season_type : str, season_year : int, gender : s
     name = result.find("h3").text.strip()
     print("Name of Event: " + name)
 
+    # Check if event is relay with is-relay attribute
+    is_relay = name.endswith("Relay")
+    print("Is Relay: " + str(is_relay))
+
     repo.insert_event(eventId, name)
 
     # Get Performances Using performance-list-row
@@ -147,19 +142,14 @@ def scrape_event(eventId : int, season_type : str, season_year : int, gender : s
 
     print("Number of Performances: " + str(len(performances)))
 
-    # Check if event is relay with is-relay attribute
-    is_relay = name.endswith("Relay")
-    print("Is Relay: " + str(is_relay))
-
     for performance in performances:
         try:
             if is_relay:
                 scrape_relay_performance(eventId, season_type, season_year, gender, school_id, performance)
             else:
-                continue
                 scrape_individual_performance(eventId, season_type, season_year, gender, school_id, performance)
         except Exception as e:
-            error_log.log_failed(str(e) + "\n" + str(performance).encode("utf-8", "ignore").decode("utf-8") + "\n\n")
+            error_log.log_failed(str(e) + "\n" + str(performance) + "\n\n")
 
 def scrape_file(file_content : str, season_type : str, season_year : int, gender : str, school_id : str):
     print("Season Type: " + season_type)
