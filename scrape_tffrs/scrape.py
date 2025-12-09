@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 import repository as repo
+import error_log
 
 def convert_result_to_decimal(result : str):
     # TODO
@@ -65,11 +66,17 @@ def scrape_individual_performance(eventId : int, season_type : str, season_year 
     assert meet_link_info.count("/") == 5
     assert meet_link_info.split("/")[4] == meet_id
 
-    # GET Meet Date
+    # Get Meet Date
     meet_date = performance.find("div", {"data-label" : "Meet Date"}).text.strip()
     print("Meet Date: " + meet_date)
 
-    # TODO NEED WIND INFO
+    # Get Wind Info
+    wind_info = performance.find("div", {"data-label" : "Wind"})
+    if wind_info == None:
+        wind_info = ""
+    else:
+        wind_info = wind_info.text.strip()
+    print("Wind Info: " + wind_info)
 
 def scrape_relay_performance(eventId : int, season_type : str, season_year : int, gender : str, school_id : str, performance : BeautifulSoup):
     print("------------------Scraping Relay Performance------------------")
@@ -99,12 +106,14 @@ def scrape_event(eventId : int, season_type : str, season_year : int, gender : s
     is_relay = name.endswith("Relay")
     print("Is Relay: " + str(is_relay))
 
-    if is_relay:
-        for performance in performances:
-            scrape_relay_performance(eventId, season_type, season_year, gender, school_id, performance)
-    else:
-        for performance in performances:
-            scrape_individual_performance(eventId, season_type, season_year, gender, school_id, performance)
+    for performance in performances:
+        try:
+            if is_relay:
+                scrape_relay_performance(eventId, season_type, season_year, gender, school_id, performance)
+            else:
+                scrape_individual_performance(eventId, season_type, season_year, gender, school_id, performance)
+        except Exception as e:
+            error_log.log_failed(str(e) + str(performance).encode("utf-8", "ignore").decode("utf-8") + "\n\n")
 
 def scrape_file(file_content : str, season_type : str, season_year : int, gender : str, school_id : str):
     print("Season Type: " + season_type)

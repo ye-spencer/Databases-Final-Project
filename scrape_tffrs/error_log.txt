@@ -1,0 +1,333 @@
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/2436862/Gettysburg/Greg_Minnick">Minnick, Greg</a>
+</div>
+<div class="col-narrow" data-label="Year">SO-2</div>
+<div class="col-narrow" data-label="Mark">
+<span title="Converted from 1.9m for Hand-Time.">
+        1.93m<span>h</span>
+</span></div>
+<div class="col-narrow" data-label="Conv">
+          6' 4"
+      </div>
+<div class="col-meet" data-label="Meet">
+      York College Tri Meet
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 24, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1746367/Gettysburg/Robby_Ford">Ford, Robby</a>
+</div>
+<div class="col-narrow" data-label="Year">JR-3</div>
+<div class="col-narrow" data-label="Points">
+<span title="Converted from 4991 for Hand-Time.">
+        4991<span>h</span>
+</span></div>
+<div class="col-meet" data-label="Meet">
+      Messiah Invitational
+    </div>
+<div class="col-narrow" data-label="Meet Date">Apr 9, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/2436862/Gettysburg/Greg_Minnick">Minnick, Greg</a>
+</div>
+<div class="col-narrow" data-label="Year">SO-2</div>
+<div class="col-narrow" data-label="Mark">
+<span title="Converted from 1.9m for Hand-Time.">
+        1.93m<span>h</span>
+</span></div>
+<div class="col-narrow" data-label="Conv">
+          6' 4"
+      </div>
+<div class="col-meet" data-label="Meet">
+      York College Tri Meet
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 24, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1746367/Gettysburg/Robby_Ford">Ford, Robby</a>
+</div>
+<div class="col-narrow" data-label="Year">JR-3</div>
+<div class="col-narrow" data-label="Points">
+<span title="Converted from 4991 for Hand-Time.">
+        4991<span>h</span>
+</span></div>
+<div class="col-meet" data-label="Meet">
+      Messiah Invitational
+    </div>
+<div class="col-narrow" data-label="Meet Date">Apr 9, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/2436862/Gettysburg/Greg_Minnick">Minnick, Greg</a>
+</div>
+<div class="col-narrow" data-label="Year">SO-2</div>
+<div class="col-narrow" data-label="Mark">
+<span title="Converted from 1.9m for Hand-Time.">
+        1.93m<span>h</span>
+</span></div>
+<div class="col-narrow" data-label="Conv">
+          6' 4"
+      </div>
+<div class="col-meet" data-label="Meet">
+      York College Tri Meet
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 24, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1746367/Gettysburg/Robby_Ford">Ford, Robby</a>
+</div>
+<div class="col-narrow" data-label="Year">JR-3</div>
+<div class="col-narrow" data-label="Points">
+<span title="Converted from 4991 for Hand-Time.">
+        4991<span>h</span>
+</span></div>
+<div class="col-meet" data-label="Meet">
+      Messiah Invitational
+    </div>
+<div class="col-narrow" data-label="Meet Date">Apr 9, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/2797674/Gettysburg/Amanda_Koslo">Koslo, Amanda</a>
+</div>
+<div class="col-narrow" data-label="Year">FR-1</div>
+<div class="col-narrow" data-label="Time">
+        59.51
+    </div>
+<div class="col-meet" data-label="Meet">
+      Little 3 Championships
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 28, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1266057/Gettysburg/Kerrin_Epstein">Epstein, Kerrin</a>
+</div>
+<div class="col-narrow" data-label="Year">SR-4</div>
+<div class="col-narrow" data-label="Time">
+        18:16.73
+    </div>
+<div class="col-meet" data-label="Meet">
+      Little 3 Championships
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 28, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1746348/Gettysburg/Vanessa_Pabon">Pabon, Vanessa</a>
+</div>
+<div class="col-narrow" data-label="Year">SR-4</div>
+<div class="col-narrow" data-label="Points">
+<span title="Converted from 3479 for Hand-Time.">
+        3479<span>h</span>
+</span></div>
+<div class="col-meet" data-label="Meet">
+      Messiah Invitational
+    </div>
+<div class="col-narrow" data-label="Meet Date">Apr 9, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/2797674/Gettysburg/Amanda_Koslo">Koslo, Amanda</a>
+</div>
+<div class="col-narrow" data-label="Year">FR-1</div>
+<div class="col-narrow" data-label="Time">
+        59.51
+    </div>
+<div class="col-meet" data-label="Meet">
+      Little 3 Championships
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 28, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1266057/Gettysburg/Kerrin_Epstein">Epstein, Kerrin</a>
+</div>
+<div class="col-narrow" data-label="Year">SR-4</div>
+<div class="col-narrow" data-label="Time">
+        18:16.73
+    </div>
+<div class="col-meet" data-label="Meet">
+      Little 3 Championships
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 28, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1746348/Gettysburg/Vanessa_Pabon">Pabon, Vanessa</a>
+</div>
+<div class="col-narrow" data-label="Year">SR-4</div>
+<div class="col-narrow" data-label="Points">
+<span title="Converted from 3479 for Hand-Time.">
+        3479<span>h</span>
+</span></div>
+<div class="col-meet" data-label="Meet">
+      Messiah Invitational
+    </div>
+<div class="col-narrow" data-label="Meet Date">Apr 9, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/2797674/Gettysburg/Amanda_Koslo">Koslo, Amanda</a>
+</div>
+<div class="col-narrow" data-label="Year">FR-1</div>
+<div class="col-narrow" data-label="Time">
+        59.51
+    </div>
+<div class="col-meet" data-label="Meet">
+      Little 3 Championships
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 28, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1266057/Gettysburg/Kerrin_Epstein">Epstein, Kerrin</a>
+</div>
+<div class="col-narrow" data-label="Year">SR-4</div>
+<div class="col-narrow" data-label="Time">
+        18:16.73
+    </div>
+<div class="col-meet" data-label="Meet">
+      Little 3 Championships
+    </div>
+<div class="col-narrow" data-label="Meet Date">Mar 28, 2010</div>
+</div>
+
+
+
+
+
+------------------Failed------------------
+'NoneType' object has no attribute 'get'<div class="performance-list-row d-flex flex-wrap align-items-center">
+<div class="col-place" data-label="Place">
+</div>
+<div class="col-athlete" data-label="Athlete">
+<a data-turbo="false" data-turbo-frame="_top" href="https://www.tfrrs.org/athletes/1746348/Gettysburg/Vanessa_Pabon">Pabon, Vanessa</a>
+</div>
+<div class="col-narrow" data-label="Year">SR-4</div>
+<div class="col-narrow" data-label="Points">
+<span title="Converted from 3479 for Hand-Time.">
+        3479<span>h</span>
+</span></div>
+<div class="col-meet" data-label="Meet">
+      Messiah Invitational
+    </div>
+<div class="col-narrow" data-label="Meet Date">Apr 9, 2010</div>
+</div>
+
+
+
+
+
