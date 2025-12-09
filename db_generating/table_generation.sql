@@ -55,6 +55,7 @@ CREATE TABLE TrackEvent (
     IsRelay         BOOLEAN NOT NULL -- True, False
 );
 
+-- NOTE: Not all relay teams have known team members
 DROP TABLE IF EXISTS RelayTeam CASCADE;
 CREATE TABLE RelayTeam (
     RelayTeamID     SERIAL PRIMARY KEY, -- 1, 101
