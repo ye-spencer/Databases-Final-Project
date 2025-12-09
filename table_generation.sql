@@ -46,9 +46,9 @@ CREATE TABLE AthleteSeason (
     UNIQUE (AthleteID, SeasonType, SeasonYear)
 );
 
-DROP TABLE IF EXISTS TrackEvent CASCADE;
+DROP TABLE IF EXISTS TrackEvent CASCADE; -- CREATED
 CREATE TABLE TrackEvent (
-    EventID         SERIAL PRIMARY KEY, -- 1, 101
+    EventID         INT PRIMARY KEY, -- 1, 101 (TFRRS Event ID)
     EventName       VARCHAR(20) NOT NULL, -- 100m, 4x100m, Discus
     EventType       VARCHAR(8) NOT NULL CHECK (EventType IN ('sprints', 'distance', 'jumps', 'throws', 'combined')), -- sprints, distance, jumps, throws, combined
     MeasureUnit     VARCHAR(7) NOT NULL CHECK (MeasureUnit IN ('seconds', 'meters', 'points')), -- seconds, meters, points
