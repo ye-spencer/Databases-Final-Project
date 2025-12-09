@@ -7,6 +7,9 @@ def convert_result_to_decimal(result : str):
     # TODO
     pass
 
+def reduce_all_whitespace(string : str):
+    return " ".join(string.split())
+
 def scrape_individual_performance(eventId : int, season_type : str, season_year : int, gender : str, school_id : str, performance : BeautifulSoup):
     print("------------------Scraping Performance------------------")
 
@@ -58,13 +61,63 @@ def scrape_individual_performance(eventId : int, season_type : str, season_year 
     print("Result Decimal: " + str(result_decimal))
 
     # Get Meet Info
-
     meet_link_info = performance.find("div", {"data-label" : "Meet"}).find("a").get("href").strip()
     meet_name = performance.find("div", {"data-label" : "Meet"}).find("a").text.strip()
     print("Meet Name: " + meet_name)
 
     assert meet_link_info.count("/") == 5
     assert meet_link_info.split("/")[4] == meet_id
+
+    # Get Meet Date
+    meet_date = performance.find("div", {"data-label" : "Meet Date"}).text.strip()
+    print("Meet Date: " + reduce_all_whitespace(meet_date))
+
+    # Get Wind Info
+    wind_info = performance.find("div", {"data-label" : "Wind"})
+    if wind_info == None:
+        wind_info = ""
+    else:
+        wind_info = wind_info.text.strip()
+    print("Wind Info: " + wind_info)
+
+def scrape_relay_performance(eventId : int, season_type : str, season_year : int, gender : str, school_id : str, performance : BeautifulSoup):
+    print("------------------Scraping Relay Performance------------------")
+
+    print("Event ID: " + str(eventId))
+    print("Season Type: " + season_type)
+    print("Season Year: " + str(season_year))
+    print("Gender: " + gender)
+    print("School ID: " + school_id)
+
+    # Get Time
+    result_info = performance.find("div", {"data-label" : "Time"}).find("a").text.strip()
+    print("Result: " + result_info)
+
+    result_decimal = convert_result_to_decimal(result_info)
+    print("Result Decimal: " + str(result_decimal))
+
+    # Get Athletes Info
+
+    athlete_link_info = performance.find("div", {"data-label" : "Athletes"})
+
+    athletes_link_info = athlete_link_info.find_all("a")
+    if len(athletes_link_info) % 4 != 0:
+        raise Exception("Invalid Number of Athletes: " + str(len(athletes_link_info)))
+    if len(athletes_link_info) == 0:
+        print("No Known Athletes")
+    else:
+        for athlete_link in athletes_link_info:
+            athlete_id = athlete_link.get("href").strip().split("/")[4]
+            print("Athlete Id: " + athlete_id)
+            assert athlete_link.get("href").strip().split("/")[5] == school_id
+
+
+    # Get Meet Info
+    meet_link_info = performance.find("div", {"data-label" : "Meet"}).find("a").get("href").strip()
+    meet_name = performance.find("div", {"data-label" : "Meet"}).find("a").text.strip()
+    print("Meet Name: " + reduce_all_whitespace(meet_name))
+
+    assert meet_link_info.count("/") == 5
 
     # Get Meet Date
     meet_date = performance.find("div", {"data-label" : "Meet Date"}).text.strip()
@@ -77,13 +130,6 @@ def scrape_individual_performance(eventId : int, season_type : str, season_year 
     else:
         wind_info = wind_info.text.strip()
     print("Wind Info: " + wind_info)
-
-def scrape_relay_performance(eventId : int, season_type : str, season_year : int, gender : str, school_id : str, performance : BeautifulSoup):
-    print("------------------Scraping Relay Performance------------------")
-    # TODO
-
-
-
 
 
 def scrape_event(eventId : int, season_type : str, season_year : int, gender : str, school_id : str, soup : BeautifulSoup):
@@ -110,9 +156,10 @@ def scrape_event(eventId : int, season_type : str, season_year : int, gender : s
             if is_relay:
                 scrape_relay_performance(eventId, season_type, season_year, gender, school_id, performance)
             else:
+                continue
                 scrape_individual_performance(eventId, season_type, season_year, gender, school_id, performance)
         except Exception as e:
-            error_log.log_failed(str(e) + str(performance).encode("utf-8", "ignore").decode("utf-8") + "\n\n")
+            error_log.log_failed(str(e) + "\n" + str(performance).encode("utf-8", "ignore").decode("utf-8") + "\n\n")
 
 def scrape_file(file_content : str, season_type : str, season_year : int, gender : str, school_id : str):
     print("Season Type: " + season_type)
@@ -132,5 +179,5 @@ def scrape_file(file_content : str, season_type : str, season_year : int, gender
 
 
 if __name__ == "__main__":
-    with open("pages/2010_Indoor_MD_college_m_Johns_Hopkins.html.html", "r") as f:
+    with open("pages/2010_Indoor_MD_college_m_Johns_Hopkins.html", "r") as f:
         scrape_file(f.read(), "Indoor", 2010, "m", "Johns_Hopkins")
