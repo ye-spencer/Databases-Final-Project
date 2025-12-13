@@ -75,8 +75,11 @@ def scrape_individual_performance(eventId : int, season_type : str, season_year 
     print("Wind Info: " + wind_info)
 
     repo.insert_athlete(athlete_id, athlete_first_name, athlete_last_name, gender)
-    repo.insert_meet(meet_id, meet_name, meet_date)
-    repo.insert_athlete_performance(meet_id, athlete_id, eventId, school_id, result, wind_info)
+    repo.insert_meet(meet_id, meet_name, reduce_all_whitespace(meet_date))
+    repo.insert_athlete_performance(
+        meet_id, athlete_id, eventId, school_id, result, wind_info,
+        season_type, season_year, athlete_year
+    )
 
 def scrape_relay_performance(eventId : int, season_type : str, season_year : int, gender : str, school_id : str, performance : BeautifulSoup):
     print("------------------Scraping Relay Performance------------------")
@@ -135,8 +138,11 @@ def scrape_relay_performance(eventId : int, season_type : str, season_year : int
         wind_info = wind_info.text.strip()
     print("Wind Info: " + wind_info)
 
-    repo.insert_meet(meet_id, meet_name, meet_date)
-    repo.insert_relay_team_performance(meet_id, athletes, eventId, school_id, result_info, wind_info)
+    repo.insert_meet(meet_id, meet_name, reduce_all_whitespace(meet_date))
+    repo.insert_relay_team_performance(
+        meet_id, athletes, eventId, school_id, result_info, wind_info,
+        season_type, season_year
+    )
     
 
 

@@ -48,7 +48,8 @@ SEASONS = {
     (2024, "Indoor") : (4466, 627),
     (2024, "Outdoor") : (4541, 645),
     (2025, "Indoor") : (4874, 661),
-    (2025, "Outdoor") : (5027, 681)
+    (2025, "Outdoor") : (5027, 681),
+    (2026, "Indoor") : (5354, 697)
 }
 
 def get_url_html_content(url : str) -> str:
@@ -75,7 +76,7 @@ def main():
 
             outpath = "pages/" + str(year) + "_" + season + "_" + url.split("/")[-1].split("?")[0]
 
-            # Exponential Backoff
+            # Exponential Backoff for retries
             for i in range(1, 4):
                 try:
                     html_content = get_url_html_content(url)
@@ -83,14 +84,22 @@ def main():
                         f.write(html_content)
 
                     scraper.scrape_file(html_content, season, year, gender, school)
+                    
+                    # Success! Break out of retry loop
+                    break
                 except requests.exceptions.RequestException as e:
                     print("Failed to download page " + url + " on attempt " + str(i))
                     print(e)
                     if i == 3:
-                        print("ERROR: to download page " + url + " after 3 attempts")
+                        print("ERROR: Failed to download page " + url + " after 3 attempts")
                         continue
                     time.sleep(0.75 * (2 ** i))
-            print(count)
+            
+            count += 1
+            print(f"Completed {count} pages: {year} {season} {school} {gender}")
+            
+            # Rate limiting: small delay between pages to avoid getting blocked
+            time.sleep(0.5)
 
 if __name__ == "__main__":
     main()
