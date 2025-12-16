@@ -46,8 +46,7 @@ async function queryPredictions(selectedModel: string, selectedSeason: string, g
     try {
         const predictions = await fetch(`/api/predictions?model=${selectedModel}&season=${selectedSeason}&gender=${gender}`);
         const data = await predictions.json();
-        console.log(data);
-        return [data.predictions, data.teamScores];
+        return [data.eventPredictions, data.teamScores];
     } catch (error) {
         console.error('Error fetching predictions:', error);
         return [[], []];
@@ -82,6 +81,7 @@ export default function PredictionsPage() {
 
     // Group predictions by event
     const eventGroups: Record<string, EventPrediction> = {};
+    console.log(predictions)
     predictions.forEach(p => {
         const key = `${p.eventname}-${p.gender}`;
         if (!eventGroups[key]) eventGroups[key] = p;
@@ -222,7 +222,7 @@ export default function PredictionsPage() {
                                                                 </td>
                                                                 <td className="px-4 py-3 text-slate-400">{pred.schoolname}</td>
                                                                 <td className="px-4 py-3 text-right font-mono text-yellow-400">
-                                                                    {event.eventtype === 'Running' || event.eventtype === 'Hurdles'
+                                                                    {event.eventtype === 'sprints' || event.eventtype === 'distance'
                                                                         ? formatTime(pred.predictedresult)
                                                                         : formatDistance(pred.predictedresult)}
                                                                 </td>

@@ -34,11 +34,11 @@ export async function GET(request: NextRequest) {
 
     if (modelLower === "season-best") {
         console.log("Season Best");
-        individualPredictions = await getSeasonBestPredictions(gender, year, seasonType);
+        individualPredictions = await getSeasonBestPredictions(gender, seasonType, year);
     }
     else if (modelLower === "linear-regression") {
         console.log("Linear Regression");
-        individualPredictions = await getLinearRegressionPredictions(gender, year, seasonType);
+        individualPredictions = await getLinearRegressionPredictions(gender, seasonType, year);
     }
     else {
         return NextResponse.json({ error: "Invalid model" }, { status: 400 });
@@ -55,11 +55,20 @@ export async function GET(request: NextRequest) {
 
 function calculateTeamScore(predictions: EventPrediction[]): TeamScore[] {
     // TODO
+
+    // Dictionary of schoolid -> score & event-score
+
+    // For each event, for the top 8 scores, give relevent points and sum per school (perhaps already create one for each school)
+
+    // Add score and breakdown for each school (include event record)
+
     return [];
 }
 
 function convertIndividualToPredictions(individualPredictions: IndividualEventPrediction[]): EventPrediction[] {
     const eventRecords: Record<string, IndividualEventPrediction[]> = {};
+
+    console.log("REACHED1")
 
     individualPredictions.forEach((record: IndividualEventPrediction) => {
         if (!eventRecords[record.eventid]) {
@@ -67,6 +76,8 @@ function convertIndividualToPredictions(individualPredictions: IndividualEventPr
         }
         eventRecords[record.eventid].push(record);
     });
+
+    console.log("REACHED2")
 
     // For each event, sort by predictedresult, asc for jumps and throws, desc for sprints and distance
     Object.entries(eventRecords).forEach(([eventid, records]) => {
@@ -82,6 +93,8 @@ function convertIndividualToPredictions(individualPredictions: IndividualEventPr
 
     const predictions: EventPrediction[] = [];
 
+    console.log("REACHED3")
+
     // For each event, create an EventPrediction object
     Object.entries(eventRecords).forEach(([eventid, records]) => {
         const eventPrediction: EventPrediction = {
@@ -96,11 +109,13 @@ function convertIndividualToPredictions(individualPredictions: IndividualEventPr
                 athletelastname: record.athletelastname,
                 schoolid: record.schoolid,
                 schoolname: record.schoolid, // Note: This is using schoolid as schoolname for now
-                predictedresult: record.predictedresult, // TODO: Convert to readable
+                predictedresult: record.predictedresult,
             }))
         };
         predictions.push(eventPrediction);
     });
+
+    console.log("REACHED4")
 
     return predictions
 }
@@ -248,7 +263,6 @@ async function getSeasonBestPredictions(gender: string, seasonType: string, seas
     }
 }
 
-async function getLinearRegressionPredictions(gender: string, seasonType: string, seasonYear: string): Promise<Promise<IndividualEventPrediction[]>> {
+async function getLinearRegressionPredictions(gender: string, seasonType: string, seasonYear: string): Promise<IndividualEventPrediction[]> {
     return getUnimplementedRandomData(gender, seasonType, seasonYear);
 }
-
