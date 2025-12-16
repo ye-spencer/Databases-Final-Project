@@ -9,6 +9,7 @@ export interface EventPrediction {
         athletefirstname: string;
         athletelastname: string;
         schoolname: string;
+        schoolid: string;
         predictedresult: number;
     }>;
 }

@@ -81,7 +81,6 @@ export default function PredictionsPage() {
 
     // Group predictions by event
     const eventGroups: Record<string, EventPrediction> = {};
-    console.log(predictions)
     predictions.forEach(p => {
         const key = `${p.eventname}-${p.gender}`;
         if (!eventGroups[key]) eventGroups[key] = p;
@@ -260,15 +259,10 @@ export default function PredictionsPage() {
                                             >
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-lg font-bold text-slate-400">#{idx + 1}</span>
-                                                        <Link
-                                                            href={`/schools/${team.schoolid}`}
-                                                            className="font-medium hover:text-yellow-400"
-                                                        >
-                                                            {team.schoolname}
-                                                        </Link>
+                                                        <span className="text-small font-bold text-slate-400">#{idx + 1}</span>
+                                                        <Link href={`/schools/${team.schoolid}`} className="font-small hover:text-yellow-400">{team.schoolname}</Link>
                                                     </div>
-                                                    <div className="text-xl font-bold text-yellow-400">
+                                                    <div className="text-medium font-bold text-yellow-400">
                                                         {team.totalscore}
                                                     </div>
                                                 </div>

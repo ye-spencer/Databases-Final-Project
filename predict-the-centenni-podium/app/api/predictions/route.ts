@@ -15,6 +15,16 @@ interface IndividualEventPrediction {
     predictedresult: number;
 }
 
+interface AthletePrediction {
+    place: number;
+    athleteid: number;
+    athletefirstname: string;
+    athletelastname: string;
+    schoolid: string;
+    schoolname: string;
+    predictedresult: number;
+}
+
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const model = searchParams.get('model');
@@ -33,42 +43,74 @@ export async function GET(request: NextRequest) {
     let individualPredictions: IndividualEventPrediction[];
 
     if (modelLower === "season-best") {
-        console.log("Season Best");
         individualPredictions = await getSeasonBestPredictions(gender, seasonType, year);
     }
     else if (modelLower === "linear-regression") {
-        console.log("Linear Regression");
         individualPredictions = await getLinearRegressionPredictions(gender, seasonType, year);
     }
     else {
         return NextResponse.json({ error: "Invalid model" }, { status: 400 });
     }
-    console.log(individualPredictions);
 
+    const schoolRows = await query<{ schoolid: string }>('SELECT schoolid FROM school');
+    const schools = schoolRows.map(s => s.schoolid);
 
     const eventPredictions = convertIndividualToPredictions(individualPredictions);
 
-    const teamScores = calculateTeamScore(eventPredictions);
+    const teamScores = calculateTeamScore(eventPredictions, schools);
 
     return NextResponse.json({ eventPredictions, teamScores });
 }
 
-function calculateTeamScore(predictions: EventPrediction[]): TeamScore[] {
-    // TODO
+function calculateTeamScore(predictions: EventPrediction[], schools: string[]): TeamScore[] {
+    const teamScores: Record<string, TeamScore> = {};
 
-    // Dictionary of schoolid -> score & event-score
+    for (const school of schools) {
+        teamScores[school] = {
+            schoolid: school,
+            schoolname: school,
+            totalscore: 0,
+            eventbreakdown: {}
+        };
+    }
 
-    // For each event, for the top 8 scores, give relevent points and sum per school (perhaps already create one for each school)
+    predictions.forEach((event: EventPrediction) => {
+        event.predictions.forEach((athlete: AthletePrediction) => {
+            let score = 0;
+            if (athlete.place === 1) {
+                score = 10;
+            }
+            else if (athlete.place === 2) {
+                score = 8;
+            }
+            else if (athlete.place === 3) {
+                score = 6;
+            }
+            else if (athlete.place === 4) {
+                score = 5;
+            }
+            else if (athlete.place === 5) {
+                score = 4;
+            }
+            else if (athlete.place === 6) {
+                score = 3;
+            }
+            else if (athlete.place === 7) {
+                score = 2;
+            }
+            else if (athlete.place === 8) {
+                score = 1;
+            }
+            teamScores[athlete.schoolid].totalscore += score;
+            teamScores[athlete.schoolid].eventbreakdown[event.eventname] = score;
+        });
+    });
 
-    // Add score and breakdown for each school (include event record)
-
-    return [];
+    return Object.values(teamScores);
 }
 
 function convertIndividualToPredictions(individualPredictions: IndividualEventPrediction[]): EventPrediction[] {
     const eventRecords: Record<string, IndividualEventPrediction[]> = {};
-
-    console.log("REACHED1")
 
     individualPredictions.forEach((record: IndividualEventPrediction) => {
         if (!eventRecords[record.eventid]) {
@@ -76,8 +118,6 @@ function convertIndividualToPredictions(individualPredictions: IndividualEventPr
         }
         eventRecords[record.eventid].push(record);
     });
-
-    console.log("REACHED2")
 
     // For each event, sort by predictedresult, asc for jumps and throws, desc for sprints and distance
     Object.entries(eventRecords).forEach(([eventid, records]) => {
@@ -92,8 +132,6 @@ function convertIndividualToPredictions(individualPredictions: IndividualEventPr
     });
 
     const predictions: EventPrediction[] = [];
-
-    console.log("REACHED3")
 
     // For each event, create an EventPrediction object
     Object.entries(eventRecords).forEach(([eventid, records]) => {
@@ -114,8 +152,6 @@ function convertIndividualToPredictions(individualPredictions: IndividualEventPr
         };
         predictions.push(eventPrediction);
     });
-
-    console.log("REACHED4")
 
     return predictions
 }
@@ -252,8 +288,6 @@ async function getSeasonBestPredictions(gender: string, seasonType: string, seas
                 GROUP BY P.EventID, TE.EventName, TE.Eventtype, Ath.gender, P.AthleteSeasonID, A.schoolid, Ath.athletefirstname, Ath.athletelastname, Ath.athleteid
                 `),
         ]);
-
-        console.log(trackSeasonRecords, fieldSeasonRecords);
 
         return [...trackSeasonRecords, ...fieldSeasonRecords]
 
