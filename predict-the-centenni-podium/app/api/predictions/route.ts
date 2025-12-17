@@ -48,6 +48,9 @@ export async function GET(request: NextRequest) {
     else if (modelLower === "linear-regression") {
         individualPredictions = await getLinearRegressionPredictions(gender, seasonType, year);
     }
+    else if (modelLower === "average-season-performance") {
+        individualPredictions = await getAverageSeasonPerformance(gender, seasonType, year);
+    }
     else {
         return NextResponse.json({ error: "Invalid model" }, { status: 400 });
     }
@@ -289,6 +292,46 @@ async function getSeasonBestPredictions(gender: string, seasonType: string, seas
         ]);
 
         return [...trackSeasonRecords, ...fieldSeasonRecords]
+
+    } catch (error) {
+        console.error('Error fetching season best predictions:', error);
+        return [];
+    }
+}
+
+
+async function getAverageSeasonPerformance(gender: string, seasonType: string, seasonYear: string): Promise<IndividualEventPrediction[]> {
+    try {
+        const [
+            averagePerformance
+        ] = await Promise.all([
+            query<IndividualEventPrediction>(
+                `
+                SELECT 
+                    P.EventID,
+                    TE.EventName,
+                    TE.Eventtype,
+                    Ath.gender,
+                    P.AthleteSeasonID,
+                    A.schoolid,
+                    Ath.athletefirstname,
+                    Ath.athletelastname,
+                    Ath.athleteid,
+                    AVG(P.Resultvalue) AS predictedresult
+                FROM Performance AS P
+                JOIN CentennialConferenceEvents AS CCE ON P.EventID = CCE.EventID
+                JOIN AthleteSeason AS A ON P.AthleteSeasonID = A.AthleteSeasonID
+                JOIN Athlete AS Ath ON A.AthleteID = Ath.AthleteID
+                JOIN TrackEvent AS TE ON P.EventID = TE.EventID
+                WHERE Ath.Gender = '${gender}'
+                    AND A.SeasonYear = '${seasonYear}'
+                    AND A.SeasonType = '${seasonType}'
+                    AND (TE.Eventtype = 'sprints' OR TE.Eventtype = 'distance')
+                GROUP BY P.EventID, TE.EventName, TE.Eventtype, Ath.gender, P.AthleteSeasonID, A.schoolid, Ath.athletefirstname, Ath.athletelastname, Ath.athleteid
+                `)
+        ]);
+
+        return [...averagePerformance]
 
     } catch (error) {
         console.error('Error fetching season best predictions:', error);

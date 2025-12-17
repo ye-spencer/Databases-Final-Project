@@ -13,6 +13,7 @@ interface PredictionModel {
 const PREDICTION_MODELS: PredictionModel[] = [
     { id: 'season-best', name: 'Season Best', description: 'Based on current season bests' },
     { id: 'linear-regression', name: 'Linear Regression', description: 'Based on linear regression' },
+    { id: 'average-season-performance', name: 'Average Season Performance', description: 'Based on average season performance' },
 ];
 
 const SEASONS = [
