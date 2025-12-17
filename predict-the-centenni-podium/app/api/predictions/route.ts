@@ -165,7 +165,7 @@ function getUnimplementedRandomData(gender: string, seasonType: string, seasonYe
             eventname: "100m Dash",
             eventtype: "sprints",
             gender: gender,
-            schoolid: "Sample_College",
+            schoolid: "Ursinus",
             athleteid: 100,
             athletefirstname: "John",
             athletelastname: "Doe",
@@ -176,7 +176,7 @@ function getUnimplementedRandomData(gender: string, seasonType: string, seasonYe
             eventname: "100m Dash",
             eventtype: "sprints",
             gender: gender,
-            schoolid: "Sample_College",
+            schoolid: "Ursinus",
             athleteid: 101,
             athletefirstname: "Steven",
             athletelastname: "Wang",
@@ -187,7 +187,7 @@ function getUnimplementedRandomData(gender: string, seasonType: string, seasonYe
             eventname: "100m Dash",
             eventtype: "sprints",
             gender: gender,
-            schoolid: "Fake_University",
+            schoolid: "Johns_Hopkins",
             athleteid: 102,
             athletefirstname: "Mike",
             athletelastname: "Shlong",
@@ -198,7 +198,7 @@ function getUnimplementedRandomData(gender: string, seasonType: string, seasonYe
             eventname: "100m Dash",
             eventtype: "sprints",
             gender: gender,
-            schoolid: "Test_State",
+            schoolid: "McDaniel",
             athleteid: 103,
             athletefirstname: "Dong",
             athletelastname: "Xiya",
@@ -209,7 +209,7 @@ function getUnimplementedRandomData(gender: string, seasonType: string, seasonYe
             eventname: "High Jump",
             eventtype: "jumps",
             gender: gender,
-            schoolid: "Test_State",
+            schoolid: "McDaniel",
             athleteid: 102,
             athletefirstname: "Mike",
             athletelastname: "Shlong",
@@ -220,13 +220,12 @@ function getUnimplementedRandomData(gender: string, seasonType: string, seasonYe
             eventname: "High Jump",
             eventtype: "jumps",
             gender: gender,
-            schoolid: "Fake_University",
+            schoolid: "Johns_Hopkins",
             athleteid: 105,
             athletefirstname: "Jesus",
             athletelastname: "Christ",
             predictedresult: 2.05
         }
-
     ];
 
     return predictions;
