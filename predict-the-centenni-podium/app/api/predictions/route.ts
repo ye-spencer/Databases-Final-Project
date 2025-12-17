@@ -239,7 +239,8 @@ async function getSeasonBestPredictions(gender: string, seasonType: string, seas
     try {
         const [
             trackSeasonRecords,
-            fieldSeasonRecords
+            fieldSeasonRecords,
+            relaySeasonRecords
         ] = await Promise.all([
             query<IndividualEventPrediction>(
                 `
@@ -286,12 +287,35 @@ async function getSeasonBestPredictions(gender: string, seasonType: string, seas
                 WHERE Ath.Gender = '${gender}'
                     AND A.SeasonYear = '${seasonYear}'
                     AND A.SeasonType = '${seasonType}'
-                    AND (TE.Eventtype = 'jumps' OR TE.Eventtype = 'throws')
+                    AND (TE.Eventtype = 'throws' OR TE.Eventtype = 'jumps' OR TE.Eventtype = 'combined')
                 GROUP BY P.EventID, TE.EventName, TE.Eventtype, Ath.gender, P.AthleteSeasonID, A.schoolid, Ath.athletefirstname, Ath.athletelastname, Ath.athleteid
+                `),
+            query<IndividualEventPrediction>(
+                `
+                SELECT 
+                    P.EventID,
+                    TE.EventName,
+                    TE.Eventtype,
+                    '${gender}' AS gender,
+                    AthS.schoolid,
+                    AthS.schoolid AS athletefirstname,
+                    ' ' AS athletelastname,
+                    'Unavailable' AS athleteid,
+                    MIN(P.Resultvalue) AS predictedresult
+                FROM Performance AS P
+                JOIN CentennialConferenceEvents AS CCE ON P.EventID = CCE.EventID
+                JOIN RelayTeamMembers AS RTM ON P.RelayTeamID = RTM.RelayTeamID
+                JOIN AthleteSeason AthS ON RTM.AthleteSeasonID = AthS.AthleteSeasonID
+                JOIN Athlete AS Ath ON AthS.AthleteID = Ath.AthleteID
+                JOIN TrackEvent AS TE ON P.EventID = TE.EventID
+                WHERE Ath.Gender = '${gender}'
+                    AND AthS.SeasonYear = '${seasonYear}'
+                    AND AthS.SeasonType = '${seasonType}'
+                GROUP BY P.EventID, TE.EventName, TE.Eventtype, AthS.schoolid;
                 `),
         ]);
 
-        return [...trackSeasonRecords, ...fieldSeasonRecords]
+        return [...trackSeasonRecords, ...fieldSeasonRecords, ...relaySeasonRecords];
 
     } catch (error) {
         console.error('Error fetching season best predictions:', error);
@@ -299,11 +323,11 @@ async function getSeasonBestPredictions(gender: string, seasonType: string, seas
     }
 }
 
-
 async function getAverageSeasonPerformance(gender: string, seasonType: string, seasonYear: string): Promise<IndividualEventPrediction[]> {
     try {
         const [
-            averagePerformance
+            averagePerformance,
+            averageRelayPerformance
         ] = await Promise.all([
             query<IndividualEventPrediction>(
                 `
@@ -328,10 +352,33 @@ async function getAverageSeasonPerformance(gender: string, seasonType: string, s
                     AND A.SeasonType = '${seasonType}'
                     AND (TE.Eventtype = 'sprints' OR TE.Eventtype = 'distance')
                 GROUP BY P.EventID, TE.EventName, TE.Eventtype, Ath.gender, P.AthleteSeasonID, A.schoolid, Ath.athletefirstname, Ath.athletelastname, Ath.athleteid
-                `)
+                `),
+            query<IndividualEventPrediction>(
+                `
+                SELECT 
+                    P.EventID,
+                    TE.EventName,
+                    TE.Eventtype,
+                    '${gender}' AS gender,
+                    AthS.schoolid,
+                    AthS.schoolid AS athletefirstname,
+                    ' ' AS athletelastname,
+                    'Unavailable' AS athleteid,
+                    AVG(P.Resultvalue) AS predictedresult
+                FROM Performance AS P
+                JOIN CentennialConferenceEvents AS CCE ON P.EventID = CCE.EventID
+                JOIN RelayTeamMembers AS RTM ON P.RelayTeamID = RTM.RelayTeamID
+                JOIN AthleteSeason AthS ON RTM.AthleteSeasonID = AthS.AthleteSeasonID
+                JOIN Athlete AS Ath ON AthS.AthleteID = Ath.AthleteID
+                JOIN TrackEvent AS TE ON P.EventID = TE.EventID
+                WHERE Ath.Gender = '${gender}'
+                    AND AthS.SeasonYear = '${seasonYear}'
+                    AND AthS.SeasonType = '${seasonType}'
+                GROUP BY P.EventID, TE.EventName, TE.Eventtype, AthS.schoolid;
+                `),
         ]);
 
-        return [...averagePerformance]
+        return [...averagePerformance, ...averageRelayPerformance];
 
     } catch (error) {
         console.error('Error fetching season best predictions:', error);
