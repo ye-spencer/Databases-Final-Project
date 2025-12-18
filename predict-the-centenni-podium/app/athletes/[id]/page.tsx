@@ -82,18 +82,6 @@ interface AthleteData {
   }>;
 }
 
-function calculateTrend(performances: number[]): { trend: string; color: string } {
-  if (performances.length < 3) return { trend: 'Not enough data', color: 'text-slate-400' };
-  
-  const recent = performances.slice(0, 3).reduce((a, b) => a + b, 0) / 3;
-  const older = performances.slice(-3).reduce((a, b) => a + b, 0) / 3;
-  const diff = ((older - recent) / older) * 100;
-  
-  if (diff > 2) return { trend: '📈 Improving', color: 'text-green-400' };
-  if (diff < -2) return { trend: '📉 Declining', color: 'text-red-400' };
-  return { trend: '➡️ Consistent', color: 'text-yellow-400' };
-}
-
 function formatTime(seconds: number | string | null | undefined): string {
     if (seconds === null || seconds === undefined) return '-';
     
@@ -121,7 +109,8 @@ export default function AthleteDetailPage({ params }: { params: Promise<{ id: st
   const { id } = use(params);
   const [data, setData] = useState<AthleteData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'pbs' | 'seasonbests' | 'history' | 'trends'>('pbs');
+  const [activeTab, setActiveTab] = useState<'pbs' | 'seasonbests' | 'history'>('pbs');
+  const [historyView, setHistoryView] = useState<'overall' | 'byevent'>('overall');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -220,7 +209,7 @@ export default function AthleteDetailPage({ params }: { params: Promise<{ id: st
       <main className="max-w-6xl mx-auto py-8 px-6">
         {/* Tabs */}
         <div className="flex gap-4 mb-8">
-          {(['pbs', 'seasonbests', 'history', 'trends'] as const).map(tab => (
+          {(['pbs', 'seasonbests', 'history'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -232,8 +221,7 @@ export default function AthleteDetailPage({ params }: { params: Promise<{ id: st
             >
               {tab === 'pbs' ? '🏆 Personal Bests' : 
                tab === 'seasonbests' ? '📅 Season Bests' :
-               tab === 'history' ? '📋 History' : 
-               '📈 Trends'}
+               '📋 History'}
             </button>
           ))}
         </div>
@@ -356,85 +344,111 @@ export default function AthleteDetailPage({ params }: { params: Promise<{ id: st
           ].sort((a, b) => new Date(b.startdate).getTime() - new Date(a.startdate).getTime());
 
           return (
-            <div className="bg-slate-800 rounded-xl overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-slate-700">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Date</th>
-                    <th className="px-4 py-3 text-left">Meet</th>
-                    <th className="px-4 py-3 text-left">Event</th>
-                    <th className="px-4 py-3 text-right">Result</th>
-                    <th className="px-4 py-3 text-right">Wind</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allHistory.slice(0, 50).map(p => (
-                    <tr key={`${p.isRelay ? 'relay-' : ''}${p.performanceid}`} className={`border-t border-slate-700 ${p.isRelay ? 'bg-slate-750' : ''}`}>
-                      <td className="px-4 py-3 text-slate-400">
-                        {new Date(p.startdate).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3">{p.meetname}</td>
-                      <td className="px-4 py-3">
-                        {formatEventName(p.eventname)}
-                      </td>
-                      <td className="px-4 py-3 text-right font-mono text-blue-400">
-                        {formatTime(p.resultvalue)}
-                      </td>
-                      <td className="px-4 py-3 text-right text-slate-500">
-                        {p.windgauge ? `${p.windgauge > 0 ? '+' : ''}${p.windgauge}` : '-'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div>
+              {/* History View Toggle */}
+              <div className="flex gap-4 mb-6">
+                <button
+                  onClick={() => setHistoryView('overall')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    historyView === 'overall'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Overall
+                </button>
+                <button
+                  onClick={() => setHistoryView('byevent')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    historyView === 'byevent'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  By Event
+                </button>
+              </div>
+
+              {/* Overall View */}
+              {historyView === 'overall' && (
+                <div className="bg-slate-800 rounded-xl overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-slate-700">
+                      <tr>
+                        <th className="px-4 py-3 text-left">Date</th>
+                        <th className="px-4 py-3 text-left">Meet</th>
+                        <th className="px-4 py-3 text-left">Event</th>
+                        <th className="px-4 py-3 text-right">Result</th>
+                        <th className="px-4 py-3 text-right">Wind</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allHistory.slice(0, 50).map(p => (
+                        <tr key={`${p.isRelay ? 'relay-' : ''}${p.performanceid}`} className={`border-t border-slate-700 ${p.isRelay ? 'bg-slate-750' : ''}`}>
+                          <td className="px-4 py-3 text-slate-400">
+                            {new Date(p.startdate).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3">{p.meetname}</td>
+                          <td className="px-4 py-3">
+                            {formatEventName(p.eventname)}
+                          </td>
+                          <td className="px-4 py-3 text-right font-mono text-blue-400">
+                            {formatTime(p.resultvalue)}
+                          </td>
+                          <td className="px-4 py-3 text-right text-slate-500">
+                            {p.windgauge ? `${p.windgauge > 0 ? '+' : ''}${p.windgauge}` : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* By Event View */}
+              {historyView === 'byevent' && (
+                <div className="space-y-6">
+                  {Object.entries(trendByEvent).map(([key, data]) => {
+                    const seasonColor = data.seasonType === 'Indoor' ? 'text-blue-400' : 'text-green-400';
+                    const seasonIcon = data.seasonType === 'Indoor' ? '🏠' : '☀️';
+                    
+                    return (
+                      <div key={key} className="bg-slate-800 rounded-xl p-6 border border-slate-700">
+                        <div className="mb-4">
+                          <h3 className="text-xl font-bold">{formatEventName(data.eventName)}</h3>
+                          <span className={`text-sm ${seasonColor}`}>
+                            {seasonIcon} {data.seasonType}
+                          </span>
+                        </div>
+                        
+                        {/* All performances in chronological order */}
+                        <div className="mt-4">
+                          <h4 className="text-sm font-semibold text-slate-400 mb-3">All Performances (Chronological)</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto">
+                            {data.performances.map((p, i) => (
+                              <div key={i} className="bg-slate-700 rounded px-3 py-2 text-sm">
+                                <div className="font-mono text-blue-400">{formatTime(p)}</div>
+                                <div className="text-xs text-slate-400 mt-1">
+                                  {new Date(data.dates[i]).toLocaleDateString()}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {Object.keys(trendByEvent).length === 0 && (
+                    <div className="text-slate-500 text-center py-12">
+                      No performance data available
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })()}
 
-        {/* Trends Tab */}
-        {activeTab === 'trends' && (
-          <div className="space-y-6">
-            {Object.entries(trendByEvent).map(([key, data]) => {
-              const { trend, color } = calculateTrend(data.performances);
-              const seasonColor = data.seasonType === 'Indoor' ? 'text-blue-400' : 'text-green-400';
-              const seasonIcon = data.seasonType === 'Indoor' ? '🏠' : '☀️';
-              
-              return (
-                <div key={key} className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold">{formatEventName(data.eventName)}</h3>
-                      <span className={`text-sm ${seasonColor}`}>
-                        {seasonIcon} {data.seasonType}
-                      </span>
-                    </div>
-                    <span className={`text-lg font-medium ${color}`}>{trend}</span>
-                  </div>
-                  
-                  {/* All performances in chronological order */}
-                  <div className="mt-4">
-                    <h4 className="text-sm font-semibold text-slate-400 mb-3">All Performances (Chronological)</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto">
-                      {data.performances.map((p, i) => (
-                        <div key={i} className="bg-slate-700 rounded px-3 py-2 text-sm">
-                          <div className="font-mono text-blue-400">{formatTime(p)}</div>
-                          <div className="text-xs text-slate-400 mt-1">
-                            {new Date(data.dates[i]).toLocaleDateString()}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            {Object.keys(trendByEvent).length === 0 && (
-              <div className="text-slate-500 text-center py-12">
-                Not enough performance data for trend analysis
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Season Bests Tab */}
         {activeTab === 'seasonbests' && (() => {
