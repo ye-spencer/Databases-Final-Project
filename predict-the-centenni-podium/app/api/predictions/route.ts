@@ -160,81 +160,6 @@ function convertIndividualToPredictions(individualPredictions: IndividualEventPr
     return predictions
 }
 
-// Note: Delete when done
-function getUnimplementedRandomData(gender: string, seasonType: string, seasonYear: string): IndividualEventPrediction[] {
-
-    const predictions: IndividualEventPrediction[] = [
-        {
-            eventid: 1,
-            eventname: "100m Dash",
-            eventtype: "sprints",
-            gender: gender,
-            schoolid: "Ursinus",
-            athleteid: 100,
-            athletefirstname: "John",
-            athletelastname: "Doe",
-            predictedresult: 10.76
-        },
-        {
-            eventid: 1,
-            eventname: "100m Dash",
-            eventtype: "sprints",
-            gender: gender,
-            schoolid: "Ursinus",
-            athleteid: 101,
-            athletefirstname: "Steven",
-            athletelastname: "Wang",
-            predictedresult: 10.45
-        },
-        {
-            eventid: 1,
-            eventname: "100m Dash",
-            eventtype: "sprints",
-            gender: gender,
-            schoolid: "Johns_Hopkins",
-            athleteid: 102,
-            athletefirstname: "Mike",
-            athletelastname: "Shlong",
-            predictedresult: 10.99
-        },
-        {
-            eventid: 1,
-            eventname: "100m Dash",
-            eventtype: "sprints",
-            gender: gender,
-            schoolid: "McDaniel",
-            athleteid: 103,
-            athletefirstname: "Dong",
-            athletelastname: "Xiya",
-            predictedresult: 10.99
-        },
-        {
-            eventid: 3,
-            eventname: "High Jump",
-            eventtype: "jumps",
-            gender: gender,
-            schoolid: "McDaniel",
-            athleteid: 102,
-            athletefirstname: "Mike",
-            athletelastname: "Shlong",
-            predictedresult: 2.00
-        },
-        {
-            eventid: 3,
-            eventname: "High Jump",
-            eventtype: "jumps",
-            gender: gender,
-            schoolid: "Johns_Hopkins",
-            athleteid: 105,
-            athletefirstname: "Jesus",
-            athletelastname: "Christ",
-            predictedresult: 2.05
-        }
-    ];
-
-    return predictions;
-}
-
 async function getSeasonBestPredictions(gender: string, seasonType: string, seasonYear: string): Promise<IndividualEventPrediction[]> {
 
     try {
@@ -351,7 +276,6 @@ async function getAverageSeasonPerformance(gender: string, seasonType: string, s
                 WHERE Ath.Gender = '${gender}'
                     AND A.SeasonYear = '${seasonYear}'
                     AND A.SeasonType = '${seasonType}'
-                    AND (TE.Eventtype = 'sprints' OR TE.Eventtype = 'distance')
                 GROUP BY P.EventID, TE.EventName, TE.Eventtype, Ath.gender, P.AthleteSeasonID, A.schoolid, Ath.athletefirstname, Ath.athletelastname, Ath.athleteid
                 `),
             query<IndividualEventPrediction>(
@@ -388,5 +312,27 @@ async function getAverageSeasonPerformance(gender: string, seasonType: string, s
 }
 
 async function getLinearRegressionPredictions(gender: string, seasonType: string, seasonYear: string): Promise<IndividualEventPrediction[]> {
-    return getUnimplementedRandomData(gender, seasonType, seasonYear);
+    try {
+        const predictions = await query<IndividualEventPrediction>(
+            `
+            SELECT 
+                EventID,
+                EventName,
+                EventType,
+                Gender,
+                SchoolID,
+                AthleteID,
+                AthleteFirstName,
+                AthleteLastName,
+                predictedresult
+            FROM LinearRegressionPredictions
+            WHERE Gender = '${gender}'
+                AND SeasonType = '${seasonType}'
+                AND SeasonYear = '${seasonYear}'
+            `);
+        return predictions;
+    } catch (error) {
+        console.error('Error fetching linear regression predictions:', error);
+        return [];
+    }
 }
