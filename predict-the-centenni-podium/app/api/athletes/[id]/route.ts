@@ -121,13 +121,137 @@ export async function GET(
       ORDER BY e.EventName, ats.SeasonType, tm.StartDate ASC
     `, [id]);
 
+    // Get relay personal bests (all-time best per relay event, separated by Indoor/Outdoor)
+    // Relays are always time-based (lower is better)
+    // Use DISTINCT ON to ensure each performance appears only once (not once per team member)
+    const relayPersonalBests = await query(`
+      WITH UniqueRelayPerformances AS (
+        SELECT DISTINCT ON (p.PerformanceID)
+          p.PerformanceID,
+          e.EventID,
+          e.EventName,
+          e.EventType,
+          e.MeasureUnit,
+          ats.SeasonType,
+          p.ResultValue AS PersonalBest,
+          tm.MeetName AS PBMeet,
+          tm.StartDate AS PBDate,
+          s.SchoolName AS SchoolName
+        FROM Performance p
+        JOIN RelayTeam rt ON p.RelayTeamID = rt.RelayTeamID
+        JOIN RelayTeamMembers rtm ON rt.RelayTeamID = rtm.RelayTeamID
+        JOIN AthleteSeason ats ON rtm.AthleteSeasonID = ats.AthleteSeasonID
+        JOIN TrackEvent e ON p.EventID = e.EventID
+        JOIN TrackMeet tm ON p.MeetID = tm.MeetID
+        JOIN School s ON rt.SchoolID = s.SchoolID
+        WHERE ats.AthleteID = $1
+          AND e.IsRelay = TRUE
+          AND p.ResultValue IS NOT NULL
+        ORDER BY p.PerformanceID
+      )
+      SELECT DISTINCT ON (EventID, SeasonType)
+        EventID,
+        EventName,
+        EventType,
+        MeasureUnit,
+        SeasonType,
+        PersonalBest,
+        PBMeet,
+        PBDate,
+        SchoolName
+      FROM UniqueRelayPerformances
+      ORDER BY EventID, SeasonType, PersonalBest ASC, PBDate DESC
+    `, [id]);
+
+    // Get relay season bests (best per relay event per season)
+    // Use DISTINCT ON to ensure each performance appears only once (not once per team member)
+    const relaySeasonBests = await query(`
+      WITH UniqueRelayPerformances AS (
+        SELECT DISTINCT ON (p.PerformanceID)
+          p.PerformanceID,
+          ats.SeasonYear,
+          ats.SeasonType,
+          e.EventID,
+          e.EventName,
+          p.ResultValue AS SeasonBest,
+          s.SchoolName AS SchoolName
+        FROM Performance p
+        JOIN RelayTeam rt ON p.RelayTeamID = rt.RelayTeamID
+        JOIN RelayTeamMembers rtm ON rt.RelayTeamID = rtm.RelayTeamID
+        JOIN AthleteSeason ats ON rtm.AthleteSeasonID = ats.AthleteSeasonID
+        JOIN TrackEvent e ON p.EventID = e.EventID
+        JOIN School s ON rt.SchoolID = s.SchoolID
+        WHERE ats.AthleteID = $1
+          AND e.IsRelay = TRUE
+          AND p.ResultValue IS NOT NULL
+        ORDER BY p.PerformanceID
+      )
+      SELECT DISTINCT ON (SeasonYear, SeasonType, EventID)
+        SeasonYear,
+        SeasonType,
+        EventName,
+        SeasonBest,
+        SchoolName
+      FROM UniqueRelayPerformances
+      ORDER BY SeasonYear DESC, SeasonType, EventID, SeasonBest ASC
+    `, [id]);
+
+    // Get relay performance history
+    // Use DISTINCT ON to ensure each performance appears only once (not once per team member)
+    const relayHistory = await query(`
+      SELECT DISTINCT ON (p.PerformanceID)
+        p.PerformanceID,
+        e.EventName,
+        e.EventType,
+        p.ResultValue,
+        tm.MeetName,
+        tm.StartDate,
+        ats.SeasonYear,
+        ats.SeasonType,
+        s.SchoolName AS SchoolName
+      FROM Performance p
+      JOIN RelayTeam rt ON p.RelayTeamID = rt.RelayTeamID
+      JOIN RelayTeamMembers rtm ON rt.RelayTeamID = rtm.RelayTeamID
+      JOIN AthleteSeason ats ON rtm.AthleteSeasonID = ats.AthleteSeasonID
+      JOIN TrackEvent e ON p.EventID = e.EventID
+      JOIN TrackMeet tm ON p.MeetID = tm.MeetID
+      JOIN School s ON rt.SchoolID = s.SchoolID
+      WHERE ats.AthleteID = $1
+        AND e.IsRelay = TRUE
+      ORDER BY p.PerformanceID, tm.StartDate DESC
+    `, [id]);
+
+    // Get relay trend data
+    // Use DISTINCT ON to ensure each performance appears only once (not once per team member)
+    const relayTrendData = await query(`
+      SELECT DISTINCT ON (p.PerformanceID)
+        e.EventName,
+        ats.SeasonType,
+        p.ResultValue,
+        tm.StartDate
+      FROM Performance p
+      JOIN RelayTeam rt ON p.RelayTeamID = rt.RelayTeamID
+      JOIN RelayTeamMembers rtm ON rt.RelayTeamID = rtm.RelayTeamID
+      JOIN AthleteSeason ats ON rtm.AthleteSeasonID = ats.AthleteSeasonID
+      JOIN TrackEvent e ON p.EventID = e.EventID
+      JOIN TrackMeet tm ON p.MeetID = tm.MeetID
+      WHERE ats.AthleteID = $1
+        AND e.IsRelay = TRUE
+        AND p.ResultValue IS NOT NULL
+      ORDER BY p.PerformanceID, e.EventName, ats.SeasonType, tm.StartDate ASC
+    `, [id]);
+
     return NextResponse.json({
       athlete: athleteInfo[0],
       seasons,
       personalBests,
       seasonBests,
       performanceHistory,
-      trendData
+      trendData,
+      relayPersonalBests,
+      relaySeasonBests,
+      relayHistory,
+      relayTrendData
     });
   } catch (error) {
     console.error('Error fetching athlete details:', error);

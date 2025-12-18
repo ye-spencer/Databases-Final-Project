@@ -72,6 +72,13 @@ function getEventOrder(eventName: string): number {
   return 999;
 }
 
+function formatEventName(eventName: string): string {
+  // Convert full relay names to abbreviations
+  if (eventName === 'Sprint Medley Relay') return 'SMR';
+  if (eventName === 'Distance Medley Relay' || eventName === 'Distance Medley Rela') return 'DMR';
+  return eventName;
+}
+
 export default function MeetDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [data, setData] = useState<MeetData | null>(null);
@@ -195,7 +202,7 @@ export default function MeetDetailPage({ params }: { params: Promise<{ id: strin
                           selectedEvent === event ? 'bg-orange-600' : 'bg-slate-800 hover:bg-slate-700'
                         }`}
                       >
-                        {event}
+                        {formatEventName(event)}
                       </button>
                     ))}
                     {relayEvents.length > 0 && (
@@ -209,7 +216,7 @@ export default function MeetDetailPage({ params }: { params: Promise<{ id: strin
                               selectedEvent === event ? 'bg-orange-600' : 'bg-slate-800 hover:bg-slate-700'
                             }`}
                           >
-                            {event}
+                            {formatEventName(event)}
                           </button>
                         ))}
                       </>
@@ -224,7 +231,7 @@ export default function MeetDetailPage({ params }: { params: Promise<{ id: strin
               {selectedEvent ? (
                 <div className="bg-slate-800 rounded-xl overflow-hidden">
                   <div className={`px-6 py-4 ${gender === 'M' ? 'bg-blue-900' : 'bg-pink-900'}`}>
-                    <h3 className="text-xl font-bold">{selectedEvent}</h3>
+                    <h3 className="text-xl font-bold">{formatEventName(selectedEvent)}</h3>
                     <p className="text-sm text-slate-300">{gender === 'M' ? "Men's" : "Women's"}</p>
                   </div>
                   <table className="w-full">

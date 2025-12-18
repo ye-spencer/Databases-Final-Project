@@ -41,6 +41,17 @@ interface SchoolData {
         classyear: string;
         count: number;
     }>;
+    relayRecords: Array<{
+        eventname: string;
+        eventtype: string;
+        schoolrecord: number;
+        seasonyear: number;
+    }>;
+    relaySeasonBests: Array<{
+        eventname: string;
+        eventtype?: string;
+        seasonbest: number;
+    }>;
 }
 
 function formatTime(seconds: number | string | null | undefined): string {
@@ -130,6 +141,13 @@ function sortEventNames(events: string[]): string[] {
     return [...events].sort((a, b) => getEventOrder(a) - getEventOrder(b));
 }
 
+function formatEventName(eventName: string): string {
+    // Convert full relay names to abbreviations
+    if (eventName === 'Sprint Medley Relay') return 'SMR';
+    if (eventName === 'Distance Medley Relay' || eventName === 'Distance Medley Rela') return 'DMR';
+    return eventName;
+}
+
 export default function SchoolDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const [data, setData] = useState<SchoolData | null>(null);
@@ -179,7 +197,7 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
         );
     }
 
-    const { school, roster, records, seasonBests, classBreakdown } = data;
+    const { school, roster, records, seasonBests, classBreakdown, relayRecords, relaySeasonBests } = data;
 
     return (
         <div className="min-h-screen bg-slate-900 text-white">
@@ -367,6 +385,15 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                         combined: '🏅 Combined Events'
                     };
 
+                    // Group relay records by event
+                    const relayRecordsByEvent: Record<string, typeof relayRecords> = {};
+                    relayRecords?.forEach(r => {
+                        if (!relayRecordsByEvent[r.eventname]) relayRecordsByEvent[r.eventname] = [];
+                        if (relayRecordsByEvent[r.eventname].length < 5) {
+                            relayRecordsByEvent[r.eventname].push(r);
+                        }
+                    });
+
                     return (
                         <div className="space-y-8">
                             {typeOrder.map(eventType => {
@@ -379,7 +406,7 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                                         <div className="grid md:grid-cols-2 gap-4">
                                             {events.map(eventName => (
                                                 <div key={eventName} className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700">
-                                                    <div className="bg-slate-700 px-4 py-2 font-bold">{eventName}</div>
+                                                    <div className="bg-slate-700 px-4 py-2 font-bold">{formatEventName(eventName)}</div>
                                                     <table className="w-full">
                                                         <thead className="bg-slate-750 text-sm text-slate-400">
                                                             <tr>
@@ -412,6 +439,40 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                                     </div>
                                 );
                             })}
+
+                            {/* Relay Records Section */}
+                            {Object.keys(relayRecordsByEvent).length > 0 && (
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-purple-400">Relays</h3>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {sortEventNames(Object.keys(relayRecordsByEvent)).map(eventName => (
+                                            <div key={eventName} className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 border-l-4 border-l-purple-500">
+                                                <div className="bg-slate-700 px-4 py-2 font-bold">{formatEventName(eventName)}</div>
+                                                <table className="w-full">
+                                                    <thead className="bg-slate-750 text-sm text-slate-400">
+                                                        <tr>
+                                                            <th className="px-3 py-2 text-left">#</th>
+                                                            <th className="px-3 py-2 text-right">Time</th>
+                                                            <th className="px-3 py-2 text-right">Year</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {relayRecordsByEvent[eventName]?.map((r, i) => (
+                                                            <tr key={i} className="border-t border-slate-700">
+                                                                <td className="px-3 py-2 text-slate-500">{i + 1}</td>
+                                                                <td className="px-3 py-2 text-right font-mono text-purple-400">
+                                                                    {formatTime(r.schoolrecord)}
+                                                                </td>
+                                                                <td className="px-3 py-2 text-right text-slate-500">{r.seasonyear}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     );
                 })()}
@@ -449,6 +510,15 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                         combined: '🏅 Combined Events'
                     };
 
+                    // Group relay season bests by event
+                    const relayBestsByEvent: Record<string, typeof relaySeasonBests> = {};
+                    relaySeasonBests?.forEach(sb => {
+                        if (!relayBestsByEvent[sb.eventname]) relayBestsByEvent[sb.eventname] = [];
+                        if (relayBestsByEvent[sb.eventname].length < 5) {
+                            relayBestsByEvent[sb.eventname].push(sb);
+                        }
+                    });
+
                     return (
                         <div className="space-y-8">
                             <div className="text-sm text-slate-400 mb-4">
@@ -464,7 +534,7 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                                         <div className="grid md:grid-cols-2 gap-4">
                                             {events.map(eventName => (
                                                 <div key={eventName} className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700">
-                                                    <div className="bg-slate-700 px-4 py-2 font-bold">{eventName}</div>
+                                                    <div className="bg-slate-700 px-4 py-2 font-bold">{formatEventName(eventName)}</div>
                                                     <table className="w-full">
                                                         <thead className="bg-slate-750 text-sm text-slate-400">
                                                             <tr>
@@ -495,6 +565,38 @@ export default function SchoolDetailPage({ params }: { params: Promise<{ id: str
                                     </div>
                                 );
                             })}
+
+                            {/* Relay Season Bests Section */}
+                            {Object.keys(relayBestsByEvent).length > 0 && (
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-purple-400">Relays</h3>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {sortEventNames(Object.keys(relayBestsByEvent)).map(eventName => (
+                                            <div key={eventName} className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 border-l-4 border-l-purple-500">
+                                                <div className="bg-slate-700 px-4 py-2 font-bold">{formatEventName(eventName)}</div>
+                                                <table className="w-full">
+                                                    <thead className="bg-slate-750 text-sm text-slate-400">
+                                                        <tr>
+                                                            <th className="px-3 py-2 text-left">#</th>
+                                                            <th className="px-3 py-2 text-right">Time</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {relayBestsByEvent[eventName]?.map((sb, i) => (
+                                                            <tr key={i} className="border-t border-slate-700">
+                                                                <td className="px-3 py-2 text-slate-500">{i + 1}</td>
+                                                                <td className="px-3 py-2 text-right font-mono text-purple-400">
+                                                                    {formatTime(sb.seasonbest)}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     );
                 })()}

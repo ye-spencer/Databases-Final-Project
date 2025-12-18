@@ -168,12 +168,124 @@ export async function GET(
       ORDER BY ats.ClassYear
     `, [id, seasonYear, seasonType, gender]);
 
+    // Get relay records - TOP 5 per relay event (filtered by gender and season type)
+    // Records are ALL-TIME for this school/gender/season type combo
+    // Relays are always time-based (lower is better)
+    // Use DISTINCT ON to ensure each performance appears only once (not once per team member)
+    const relayRecords = await query(`
+      WITH UniqueRelayPerformances AS (
+        SELECT DISTINCT ON (p.PerformanceID)
+          p.PerformanceID,
+          e.EventID,
+          e.EventName,
+          e.EventType,
+          e.MeasureUnit,
+          p.ResultValue AS SchoolRecord,
+          ats.SeasonYear
+        FROM Performance p
+        JOIN RelayTeam rt ON p.RelayTeamID = rt.RelayTeamID
+        JOIN RelayTeamMembers rtm ON rt.RelayTeamID = rtm.RelayTeamID
+        JOIN AthleteSeason ats ON rtm.AthleteSeasonID = ats.AthleteSeasonID
+        JOIN Athlete a ON ats.AthleteID = a.AthleteID
+        JOIN TrackEvent e ON p.EventID = e.EventID
+        WHERE rt.SchoolID = $1
+          AND e.IsRelay = TRUE
+          AND p.ResultValue IS NOT NULL
+          AND a.Gender = $2
+          AND ats.SeasonType = $3
+        ORDER BY p.PerformanceID
+      ),
+      RankedRelayPerformances AS (
+        SELECT 
+          EventID,
+          EventName,
+          EventType,
+          MeasureUnit,
+          SchoolRecord,
+          SeasonYear,
+          ROW_NUMBER() OVER (
+            PARTITION BY EventID 
+            ORDER BY SchoolRecord ASC
+          ) AS rank
+        FROM UniqueRelayPerformances
+      )
+      SELECT 
+        EventID,
+        EventName,
+        EventType,
+        MeasureUnit,
+        SchoolRecord,
+        SeasonYear
+      FROM RankedRelayPerformances
+      WHERE rank <= 5
+      ORDER BY EventType, EventName, rank
+    `, [id, gender, seasonType]);
+
+    // Get relay season bests for CURRENT season only - TOP 5 per relay event
+    // Filter by BOTH AthleteSeason AND Meet date to ensure it's from this season
+    // Relays are always time-based (lower is better)
+    // Use DISTINCT ON to ensure each performance appears only once (not once per team member)
+    const relaySeasonBests = await query(`
+      WITH UniqueRelaySeasonPerformances AS (
+        SELECT DISTINCT ON (p.PerformanceID)
+          p.PerformanceID,
+          e.EventID,
+          e.EventName,
+          e.EventType,
+          p.ResultValue AS SeasonBest,
+          m.MeetName,
+          m.StartDate
+        FROM Performance p
+        JOIN RelayTeam rt ON p.RelayTeamID = rt.RelayTeamID
+        JOIN RelayTeamMembers rtm ON rt.RelayTeamID = rtm.RelayTeamID
+        JOIN AthleteSeason ats ON rtm.AthleteSeasonID = ats.AthleteSeasonID
+        JOIN Athlete a ON ats.AthleteID = a.AthleteID
+        JOIN TrackEvent e ON p.EventID = e.EventID
+        JOIN TrackMeet m ON p.MeetID = m.MeetID
+        WHERE rt.SchoolID = $1
+          AND ats.SeasonYear = $2
+          AND ats.SeasonType = $3
+          AND e.IsRelay = TRUE
+          AND p.ResultValue IS NOT NULL
+          AND a.Gender = $4
+          AND m.StartDate >= $5::date
+          AND m.StartDate <= $6::date
+        ORDER BY p.PerformanceID
+      ),
+      RankedRelaySeasonPerformances AS (
+        SELECT 
+          EventID,
+          EventName,
+          EventType,
+          SeasonBest,
+          MeetName,
+          StartDate,
+          ROW_NUMBER() OVER (
+            PARTITION BY EventID 
+            ORDER BY SeasonBest ASC
+          ) AS rank
+        FROM UniqueRelaySeasonPerformances
+      )
+      SELECT 
+        EventID,
+        EventName,
+        EventType,
+        SeasonBest,
+        MeetName,
+        StartDate
+      FROM RankedRelaySeasonPerformances
+      WHERE rank <= 5
+      ORDER BY EventType, EventName, rank
+    `, [id, seasonYear, seasonType, gender, seasonStartDate, seasonEndDate]);
+
     return NextResponse.json({
       school: schoolInfo[0],
       roster,
       records,
       seasonBests,
-      classBreakdown
+      classBreakdown,
+      relayRecords,
+      relaySeasonBests
     });
   } catch (error) {
     console.error('Error fetching school details:', error);
