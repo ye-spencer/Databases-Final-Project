@@ -77,82 +77,6 @@ export default function Home() {
             }
             return <div className="text-xl font-bold text-white">{String(result[0])}</div>;
         }
-    fetchStats();
-  }, []);
-  return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-900 to-purple-900 py-8 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">🏃 CC Track & Field Database</h1>
-          <p className="text-blue-200">Centennial Conference Performance Analytics</p>
-        </div>
-      </header>
-
-      {/* Navigation Cards */}
-      <main className="max-w-6xl mx-auto py-12 px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Athletes Card */}
-          <Link href="/athletes" className="group">
-            <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-500/20">
-              <div className="text-5xl mb-4">👤</div>
-              <h2 className="text-2xl font-bold mb-3 group-hover:text-blue-400">Athletes</h2>
-              <ul className="text-slate-400 space-y-2">
-                <li>• Personal Bests</li>
-                <li>• Season Bests</li>
-                <li>• Performance History</li>
-                <li>• Trend Analysis</li>
-                <li>• Conference Rankings</li>
-              </ul>
-            </div>
-          </Link>
-
-          {/* Schools Card */}
-          <Link href="/schools" className="group">
-            <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-green-500 transition-all hover:shadow-lg hover:shadow-green-500/20">
-              <div className="text-5xl mb-4">🏫</div>
-              <h2 className="text-2xl font-bold mb-3 group-hover:text-green-400">Schools</h2>
-              <ul className="text-slate-400 space-y-2">
-                <li>• Team Rosters</li>
-                <li>• School Records</li>
-                <li>• Season Bests</li>
-                <li>• Class Breakdown</li>
-                <li>• Historical Trends</li>
-              </ul>
-            </div>
-          </Link>
-
-          {/* Meets Card */}
-          <Link href="/meets" className="group">
-            <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-orange-500 transition-all hover:shadow-lg hover:shadow-orange-500/20">
-              <div className="text-5xl mb-4">🏆</div>
-              <h2 className="text-2xl font-bold mb-3 group-hover:text-orange-400">Meets</h2>
-              <ul className="text-slate-400 space-y-2">
-                <li>• Event Results</li>
-                <li>• Team Scores</li>
-                <li>• Head-to-Head</li>
-                <li>• Meet Records</li>
-                <li>• Championships</li>
-              </ul>
-            </div>
-          </Link>
-
-          {/* Predictions Card */}
-          <Link href="/predictions" className="group">
-            <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-yellow-500 transition-all hover:shadow-lg hover:shadow-yellow-500/20">
-              <div className="text-5xl mb-4">🔮</div>
-              <h2 className="text-2xl font-bold mb-3 group-hover:text-yellow-400">Predictions</h2>
-              <ul className="text-slate-400 space-y-2">
-                <li>• Championship Predictions</li>
-                <li>• Individual Championship Predictions</li>
-                <li>• Scoring Projections</li>
-                <li>• Performance Predictions</li>
-                <li>• Relay Predictions</li>
-              </ul>
-            </div>
-          </Link>
-        </div>
-
         return <div className="text-4xl font-bold text-white">{String(result)}</div>;
     };
 
@@ -168,7 +92,7 @@ export default function Home() {
 
             {/* Navigation Cards */}
             <main className="max-w-6xl mx-auto py-12 px-6">
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                     {/* Athletes Card */}
                     <Link href="/athletes" className="group">
@@ -211,6 +135,21 @@ export default function Home() {
                                 <li>• Head-to-Head</li>
                                 <li>• Meet Records</li>
                                 <li>• Championships</li>
+                            </ul>
+                        </div>
+                    </Link>
+
+                    {/* Predictions Card */}
+                    <Link href="/predictions" className="group">
+                        <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-yellow-500 transition-all hover:shadow-lg hover:shadow-yellow-500/20">
+                            <div className="text-5xl mb-4">🔮</div>
+                            <h2 className="text-2xl font-bold mb-3 group-hover:text-yellow-400">Predictions</h2>
+                            <ul className="text-slate-400 space-y-2">
+                                <li>• Championship Predictions</li>
+                                <li>• Individual Championship Predictions</li>
+                                <li>• Scoring Projections</li>
+                                <li>• Performance Predictions</li>
+                                <li>• Relay Predictions</li>
                             </ul>
                         </div>
                     </Link>
