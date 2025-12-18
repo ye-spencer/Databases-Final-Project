@@ -61,6 +61,7 @@ export async function GET(
 
     // Get school records - TOP 5 per event (filtered by gender and season type)
     // Records are ALL-TIME for this school/gender/season type combo
+    // For throws/jumps/combined: higher is better (DESC), for sprints/distance: lower is better (ASC)
     const records = await query(`
       WITH RankedPerformances AS (
         SELECT 
@@ -76,7 +77,7 @@ export async function GET(
           ROW_NUMBER() OVER (
             PARTITION BY e.EventID 
             ORDER BY 
-              CASE WHEN e.MeasureUnit IN ('seconds', 'meters', 'points') THEN p.ResultValue END ASC
+              CASE WHEN e.EventType IN ('throws', 'jumps', 'combined') THEN -p.ResultValue ELSE p.ResultValue END ASC
           ) AS rank
         FROM Performance p
         JOIN AthleteSeason ats ON p.AthleteSeasonID = ats.AthleteSeasonID
@@ -105,6 +106,7 @@ export async function GET(
 
     // Get season bests for CURRENT season only - TOP 5 per event
     // Filter by BOTH AthleteSeason AND Meet date to ensure it's from this season
+    // For throws/jumps/combined: higher is better (DESC), for sprints/distance: lower is better (ASC)
     const seasonBests = await query(`
       WITH RankedSeasonPerformances AS (
         SELECT 
@@ -119,7 +121,8 @@ export async function GET(
           m.StartDate,
           ROW_NUMBER() OVER (
             PARTITION BY e.EventID 
-            ORDER BY p.ResultValue ASC
+            ORDER BY 
+              CASE WHEN e.EventType IN ('throws', 'jumps', 'combined') THEN -p.ResultValue ELSE p.ResultValue END ASC
           ) AS rank
         FROM Performance p
         JOIN AthleteSeason ats ON p.AthleteSeasonID = ats.AthleteSeasonID

@@ -41,6 +41,7 @@ export async function GET(
 
     // Get personal bests (all-time best per event, separated by Indoor/Outdoor)
     // Use DISTINCT ON to get only one row per event per season type (the best one)
+    // For throws/jumps/combined: higher is better (DESC), for sprints/distance: lower is better (ASC)
     const personalBests = await query(`
       SELECT DISTINCT ON (e.EventID, ats.SeasonType)
         e.EventID,
@@ -58,10 +59,13 @@ export async function GET(
       WHERE ats.AthleteID = $1
         AND e.IsRelay = FALSE
         AND p.ResultValue IS NOT NULL
-      ORDER BY e.EventID, ats.SeasonType, p.ResultValue ASC, tm.StartDate DESC
+      ORDER BY e.EventID, ats.SeasonType, 
+        CASE WHEN e.EventType IN ('throws', 'jumps', 'combined') THEN -p.ResultValue ELSE p.ResultValue END ASC, 
+        tm.StartDate DESC
     `, [id]);
 
     // Get season bests (best per event per season)
+    // For throws/jumps/combined: higher is better (DESC), for sprints/distance: lower is better (ASC)
     const seasonBests = await query(`
       SELECT DISTINCT ON (ats.SeasonYear, ats.SeasonType, e.EventID)
         ats.SeasonYear,
@@ -74,7 +78,8 @@ export async function GET(
       WHERE ats.AthleteID = $1
         AND e.IsRelay = FALSE
         AND p.ResultValue IS NOT NULL
-      ORDER BY ats.SeasonYear DESC, ats.SeasonType, e.EventID, p.ResultValue ASC
+      ORDER BY ats.SeasonYear DESC, ats.SeasonType, e.EventID, 
+        CASE WHEN e.EventType IN ('throws', 'jumps', 'combined') THEN -p.ResultValue ELSE p.ResultValue END ASC
     `, [id]);
 
     // Get full performance history
